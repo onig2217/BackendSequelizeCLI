@@ -3,24 +3,24 @@ const app = express();
 const port = 3000;
 const db = require("./config/dbconfig");
 
-// const corsOption = {
-//   origin: "http://localhost:3000",
-// };
-// app.use(cors(corsOption));
+const userRoute = require("./components/users/UserRoutes");
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+// Launch the server
+const initApp = async () => {
+  console.log("Trying to reach the database");
+  try {
+    await db.authenticate();
+    await db.sync({ alter: true });
+    console.log("Database connected succesfully!");
+    app.listen(port, () => {
+      console.log("Server launched succesfully!");
+      console.log("Server available here : htpps://localhost:3000");
+    });
+  } catch (err) {
+    console.log("Can't connect to the server! ");
+  }
+};
 
-app.listen(port, () => {
-  console.log("Server listening on port : " + port);
-  console.log("Server running at : http://localhost:3000");
-});
+initApp();
 
-db.authenticate()
-  .then(() => {
-    console.log("Database Connected.");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+app.use(userRoute);
